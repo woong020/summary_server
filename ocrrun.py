@@ -1072,7 +1072,7 @@ def ocr_apply(pil_image, output_dir):
 
         save_count = (save_count + 1) % 2  # save_count를 2회마다 리셋
 
-def main():
+def main(scan_size):
     
     import sys
     import os
@@ -1088,7 +1088,7 @@ def main():
     # 이미지 자르기 및 반으로 나누기
     image_path = "fixed.jpg" ## 조정 필요
     
-    scan_size = 1 #b scan size 입력값으로 작성 (1,2,3) = 콤보박스에 보여진 상태를 번호로 주면 됨
+    # scan_size = 1 #b scan size 입력값으로 작성 (1,2,3) = 콤보박스에 보여진 상태를 번호로 주면 됨
     left = 0 ## default #left~ bottom 변수 삭제 가능
     right = 0 ## default #left~ bottom 변수 삭제 가능
     top = 0  ## default  #left~ bottom 변수 삭제 가능
