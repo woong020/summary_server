@@ -14,7 +14,7 @@ class CustomSummarizer:
         raw_input_ids = self.tokenizer.encode(text)
         input_ids = [self.tokenizer.bos_token_id] + raw_input_ids + [self.tokenizer.eos_token_id]
 
-        summary_ids = self.model.generate(torch.tensor([input_ids]),  num_beams=4,  max_length=512,  eos_token_id=1)
+        summary_ids = self.model.generate(torch.tensor([input_ids]),  num_beams=2,  max_length=1024,  eos_token_id=1)
         return self.tokenizer.decode(summary_ids.squeeze().tolist(), skip_special_tokens=True)
 
 
@@ -26,7 +26,7 @@ def read_text_file(file_path):
 
 def summarizing():
     # 파일 경로 수정 필요
-    input_file_path = r'text1.txt'
+    input_file_path = r'text.txt'
     # 원문 텍스트 파일에서 읽기
     original_text = read_text_file(input_file_path)
     # 요약 모델 인스턴스 생성

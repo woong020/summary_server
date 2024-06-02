@@ -70,16 +70,20 @@ def start_server(host='0.0.0.0', port=8080, save_dir='received_files'):
                 conn.sendall(b'All files deleted successfully.')
             elif signal == '3':
                 save_img(save_dir, conn)
+                print('signal 3')
                 ocrrun.main(1)
             elif signal == '4':
                 save_img(save_dir, conn)
+                print('signal 4')
                 ocrrun.main(2)
             elif signal == '5':
                 save_img(save_dir, conn)
+                print('signal 5')
                 ocrrun.main(3)
             elif signal == '7':
                 result_smz = summarize.summarizing()
-                conn.sendall(result_smz.encode('utf-8'))
+                print(result_smz)
+                conn.sendall(result_smz.encode('utf-16'))
             elif signal == '9':
                 time.sleep(1)
                 print("input test signal 3")

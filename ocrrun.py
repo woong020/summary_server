@@ -917,15 +917,15 @@ def crop_image(image, scan_size, left, right, top, bottom): #left~ bottom 변수
     height_1, width, _ = image.shape
 
     if scan_size == 1:
-        left = 900 ## 조정 필요
-        right = 800 ## 조정 필요
-        top = 30  ## 조정 필요
-        bottom = 300  ## 조정 필요
+        left = 1100 ## 조정 필요
+        right = 1050 ## 조정 필요
+        top = 350  ## 조정 필요
+        bottom = 100  ## 조정 필요
     elif scan_size == 2:
-        left = 900 ## 조정 필요
-        right = 800 ## 조정 필요
-        top = 30  ## 조정 필요
-        bottom = 300  ## 조정 필요
+        left = 1100 ## 조정 필요
+        right = 750 ## 조정 필요
+        top = 400  ## 조정 필요
+        bottom = 0  ## 조정 필요
     elif scan_size == 3:
         left = 900 ## 조정 필요
         right = 800 ## 조정 필요
@@ -1093,9 +1093,14 @@ def main(scan_size):
     right = 0 ## default #left~ bottom 변수 삭제 가능
     top = 0  ## default  #left~ bottom 변수 삭제 가능
     bottom = 0  ## default #left~ bottom 변수 삭제 가능
-    
-    d_top = 0 ## 조정 필요
-    d_bottom = 200 ## 조정 필요
+
+    if scan_size == 1:
+        d_top = 0
+        d_bottom = 300
+    elif scan_size == 2:
+        d_top = 270
+        d_bottom = 0
+
 
     # crop_and_cut 함수 호출 후 반환 값을 받음
     left_img, right_img = crop_and_cut(image_path, scan_size, left, right, top, bottom) #left~ bottom 변수 삭제 가능
