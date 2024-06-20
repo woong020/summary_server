@@ -1,5 +1,3 @@
-# page dewarp 출처 :https://github.com/mzucker/page_dewarp
-
 import os
 import sys
 import datetime
@@ -873,20 +871,21 @@ def crop_image(image, scan_size, left, right, top, bottom): #left~ bottom 변수
     height_1, width, _ = image.shape
 
     if scan_size == 1:
-        left = 1250 ## 조정 필요
-        right = 1050 ## 조정 필요
-        top = 350  ## 조정 필요
-        bottom = 400  ## 조정 필요
-    elif scan_size == 2:
         left = 1100 ## 조정 필요
         right = 1050 ## 조정 필요
         top = 350  ## 조정 필요
         bottom = 100  ## 조정 필요
-    elif scan_size == 3:
+    elif scan_size == 2:
         left = 1100 ## 조정 필요
         right = 750 ## 조정 필요
         top = 400  ## 조정 필요
         bottom = 0  ## 조정 필요
+    elif scan_size == 3:
+        left = 1250 ## 조정 필요
+        right = 1050 ## 조정 필요
+        top = 350  ## 조정 필요
+        bottom = 400  ## 조정 필요
+    
 
     # 자를 영역을 설정합니다
     start_x = left
@@ -1040,24 +1039,14 @@ def main(scan_size):
     bottom = 0  ## default #left~ bottom 변수 삭제 가능
 
     if scan_size == 1:
-        d_top = 200
-        d_bottom = 175
-    elif scan_size == 2:
         d_top = 0
         d_bottom = 300
-    elif scan_size == 3:
+    elif scan_size == 2:
         d_top = 270
         d_bottom = 0
-
-    # if scan_size == 2:
-    #     d_top = 0
-    #     d_bottom = 300
-    # elif scan_size == 3:
-    #     d_top = 270
-    #     d_bottom = 0
-    # elif scan_size == 1:
-    #     d_top = 200
-    #     d_bottom = 175
+    elif scan_size == 3:
+        d_top = 200
+        d_bottom = 175  # 300 ## 조정 필요 #size 2는 따로주기
 
 
     # crop_and_cut 함수 호출 후 반환 값을 받음

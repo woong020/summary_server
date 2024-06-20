@@ -68,8 +68,7 @@ def handle_signal(signal, save_dir, conn):
         elif signal == '9':
             time.sleep(1)
             print("===== test signal =====")
-            test_message = "ONE TEAM     \|hs|hw|hd|jm|jy|kw|sj|/"
-            conn.sendall(test_message.encode('utf-8'))
+            conn.sendall(b'the one team =|hw|jm|sj|hd|gw|hs|jy|=')
         else:
             print("?????Unknown signal received.?????")
     except Exception as e:

@@ -1,5 +1,3 @@
-# page dewarp 출처 :https://github.com/mzucker/page_dewarp
-
 import os
 import sys
 import datetime
@@ -146,6 +144,7 @@ def fltp(point):
 
 
 def draw_correspondences(img, dstpoints, projpts):
+
     display = img.copy()
     dstpoints = norm2pix(img.shape, dstpoints, True)
     projpts = norm2pix(img.shape, projpts, True)
@@ -164,6 +163,7 @@ def draw_correspondences(img, dstpoints, projpts):
 
 
 def get_default_params(corners, ycoords, xcoords):
+
     # page width and height
     page_width = np.linalg.norm(corners[1] - corners[0])
     page_height = np.linalg.norm(corners[-1] - corners[0])
@@ -196,6 +196,12 @@ def get_default_params(corners, ycoords, xcoords):
 
 
 def project_xy(xy_coords, pvec):
+
+    # get cubic polynomial coefficients given
+    #
+    #  f(0) = 0, f'(0) = alpha
+    #  f(1) = 0, f'(1) = beta
+
     alpha, beta = tuple(pvec[CUBIC_IDX])
 
     poly = np.array([
@@ -218,6 +224,7 @@ def project_xy(xy_coords, pvec):
 
 
 def project_keypoints(pvec, keypoint_index):
+
     xy_coords = pvec[keypoint_index]
     xy_coords[0, :] = 0
 
@@ -225,6 +232,7 @@ def project_keypoints(pvec, keypoint_index):
 
 
 def resize_to_screen(src, maxw=1280, maxh=700, copy=False):
+
     height, width = src.shape[:2]
 
     scl_x = float(width)/maxw
@@ -327,6 +335,7 @@ def get_page_extents(small):
 
 
 def get_mask(name, small, pagemask, masktype):
+
     sgray = cv2.cvtColor(small, cv2.COLOR_RGB2GRAY)
 
     if masktype == 'text':
@@ -350,6 +359,7 @@ def get_mask(name, small, pagemask, masktype):
             debug_show(name, 0.3, 'eroded', mask)
 
     else:
+
         mask = cv2.adaptiveThreshold(sgray, 255, cv2.ADAPTIVE_THRESH_MEAN_C,
                                      cv2.THRESH_BINARY_INV,
                                      ADAPTIVE_WINSZ,
@@ -376,6 +386,7 @@ def interval_measure_overlap(int_a, int_b):
 
 
 def angle_dist(angle_b, angle_a):
+
     diff = angle_b - angle_a
 
     while diff > np.pi:
@@ -388,6 +399,7 @@ def angle_dist(angle_b, angle_a):
 
 
 def blob_mean_and_tangent(contour):
+
     moments = cv2.moments(contour)
 
     area = moments['m00']
@@ -411,6 +423,7 @@ def blob_mean_and_tangent(contour):
 class ContourInfo(object):
 
     def __init__(self, contour, rect, mask):
+
         self.contour = contour
         self.rect = rect
         self.mask = mask
@@ -442,6 +455,7 @@ class ContourInfo(object):
 
 
 def generate_candidate_edge(cinfo_a, cinfo_b):
+
     # we want a left of b (so a's successor will be b and b's
     # predecessor will be a) make sure right endpoint of b is to the
     # right of left endpoint of a.
@@ -474,6 +488,7 @@ def generate_candidate_edge(cinfo_a, cinfo_b):
 
 
 def make_tight_mask(contour, xmin, ymin, width, height):
+
     tight_mask = np.zeros((height, width), dtype=np.uint8)
     tight_contour = contour - np.array((xmin, ymin)).reshape((-1, 1, 2))
 
@@ -484,8 +499,10 @@ def make_tight_mask(contour, xmin, ymin, width, height):
 
 
 def get_contours(name, small, pagemask, masktype):
+
     mask = get_mask(name, small, pagemask, masktype)
 
+    #_, contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
     contours_out = []
@@ -577,6 +594,7 @@ def assemble_spans(name, small, pagemask, cinfo_list):
 
 
 def sample_spans(shape, spans):
+
     span_points = []
 
     for span in spans:
@@ -609,6 +627,7 @@ def sample_spans(shape, spans):
 
 def keypoints_from_samples(name, small, pagemask, page_outline,
                            span_points):
+
     all_evecs = np.array([[0.0, 0.0]])
     all_weights = 0
 
@@ -668,6 +687,7 @@ def keypoints_from_samples(name, small, pagemask, page_outline,
 
 
 def visualize_contours(name, small, cinfo_list):
+
     regions = np.zeros_like(small)
 
     for j, cinfo in enumerate(cinfo_list):
@@ -694,6 +714,7 @@ def visualize_contours(name, small, cinfo_list):
 
 
 def visualize_spans(name, small, pagemask, spans):
+
     regions = np.zeros_like(small)
 
     for i, span in enumerate(spans):
@@ -711,6 +732,7 @@ def visualize_spans(name, small, pagemask, spans):
 
 
 def visualize_span_points(name, small, span_points, corners):
+
     display = small.copy()
 
     for i, points in enumerate(span_points):
@@ -746,6 +768,7 @@ def imgsize(img):
 
 
 def make_keypoint_index(span_counts):
+
     nspans = len(span_counts)
     npts = sum(span_counts)
     keypoint_index = np.zeros((npts+1, 2), dtype=int)
@@ -762,6 +785,7 @@ def make_keypoint_index(span_counts):
 
 
 def optimize_params(name, small, dstpoints, span_counts, params):
+
     keypoint_index = make_keypoint_index(span_counts)
 
     def objective(pvec):
@@ -793,6 +817,7 @@ def optimize_params(name, small, dstpoints, span_counts, params):
 
 
 def get_page_dims(corners, rough_dims, params):
+
     dst_br = corners[2].flatten()
 
     dims = np.array(rough_dims)
@@ -810,6 +835,7 @@ def get_page_dims(corners, rough_dims, params):
 
 
 def remap_image(name, img, small, page_dims, params, output_dir):
+
         height = 0.5 * page_dims[1] * OUTPUT_ZOOM * img.shape[0]
         height = round_nearest_multiple(height, REMAP_DECIMATE)
 
@@ -847,10 +873,28 @@ def remap_image(name, img, small, page_dims, params, output_dir):
                             cv2.INTER_LANCZOS4,                 ## INTER_CUBIC > cv2.INTER_LANCZOS4
                             None, cv2.BORDER_REPLICATE)
 
-
+        
+        #pil_image = Image.fromarray(remapped)  ######## 기본 thresh
         pil_image = remapped
+        
+        # 이미지의 경로에서 파일 이름과 확장자를 추출합니다
+        #file_name, file_extension = os.path.splitext(output_dir)
+        # 왼쪽 이미지를 저장합니다
+        #threshfile = f"{file_name}_left{file_extension}"
+        #cv2.imwrite(threshfile, pil_image)
 
+        # 저장 경로 수정
+        #threshfile = os.path.join(output_dir, name + '_thresh.png')
+        # try:
+        #     # Save the image
+        #     pil_image.save(threshfile, dpi=(OUTPUT_DPI, OUTPUT_DPI))
+        #     print('Image saved to:', threshfile)
+        # except Exception as e:
+        #     print('Error saving image:', e)
+
+            
         if DEBUG_LEVEL >= 1:
+
             try:
                 # Save the image
                 pil_image.save(threshfile, dpi=(OUTPUT_DPI, OUTPUT_DPI))
@@ -873,20 +917,21 @@ def crop_image(image, scan_size, left, right, top, bottom): #left~ bottom 변수
     height_1, width, _ = image.shape
 
     if scan_size == 1:
-        left = 1250 ## 조정 필요
-        right = 1050 ## 조정 필요
-        top = 350  ## 조정 필요
-        bottom = 400  ## 조정 필요
-    elif scan_size == 2:
         left = 1100 ## 조정 필요
         right = 1050 ## 조정 필요
         top = 350  ## 조정 필요
         bottom = 100  ## 조정 필요
-    elif scan_size == 3:
+    elif scan_size == 2:
         left = 1100 ## 조정 필요
         right = 750 ## 조정 필요
         top = 400  ## 조정 필요
         bottom = 0  ## 조정 필요
+    elif scan_size == 3:
+        left = 1250 ## 조정 필요
+        right = 1050 ## 조정 필요
+        top = 350  ## 조정 필요
+        bottom = 400  ## 조정 필요
+    
 
     # 자를 영역을 설정합니다
     start_x = left
@@ -935,7 +980,6 @@ def cut_half(image):
 
     return left_img, right_img
 
-
 #이미지 자르기 및 저장
 def crop_and_cut(image_path, scan_size, left, right, top, bottom): #left~ bottom 변수 삭제 가능
     # 이미지를 읽어옵니다
@@ -946,9 +990,19 @@ def crop_and_cut(image_path, scan_size, left, right, top, bottom): #left~ bottom
 
     # 왼쪽 이미지와 오른쪽 이미지를 얻습니다
     left_img, right_img = cut_half(cropped_image)
+
+    # 이미지의 경로에서 파일 이름과 확장자를 추출합니다
+    #file_name, file_extension = os.path.splitext(image_path)
+
+    # 왼쪽 이미지를 저장합니다
+    #left_output_path = f"{file_name}_left{file_extension}"
+    #cv2.imwrite(left_output_path, cv2.cvtColor(left_img, cv2.COLOR_RGB2BGR))
+
+    # 오른쪽 이미지를 저장합니다
+    #right_output_path = f"{file_name}_right{file_extension}"
+    #cv2.imwrite(right_output_path, cv2.cvtColor(right_img, cv2.COLOR_RGB2BGR))
         
     return left_img, right_img
-
 
 # 이미지 하단 영역 삭제
 def crop_image_bottom(image_path, pil_image, d_top, d_bottom):
@@ -963,6 +1017,14 @@ def crop_image_bottom(image_path, pil_image, d_top, d_bottom):
 
     # 이미지를 자릅니다
     cropped_image_bottom = pil_image[start_y:end_y, start_x:end_x]
+
+    # 이미지의 경로에서 파일 이름과 확장자를 추출합니다
+    #file_name, file_extension = os.path.splitext(image_path)
+
+    # 하단 영역을 삭제한 이미지를 저장합니다
+    #output_path = f"{file_name}_left{file_extension}"
+    #cv2.imwrite(output_path, cv2.cvtColor(cropped_image_bottom, cv2.COLOR_RGB2BGR))
+
 
     return cropped_image_bottom
 
@@ -1016,15 +1078,14 @@ def ocr_apply(pil_image, output_dir):
 
         save_count = (save_count + 1) % 2  # save_count를 2회마다 리셋
 
-# server.py 에서 호출되는 메소드. scan_size를 파라미터로 사용
 def main(scan_size):
     
     import sys
     import os
-    # 경로 재생성 방지
+    #sys.argv
     sys.argv = [sys.argv[0]]
 
-    ##### 주요 파라미터 #####
+        # 주요 파라미터
     # 15 - 16줄: 텍스트 박스 영역 margin 
     # 916 - 930줄 left-bottom: 이미지 배경 cut size 
     # 116x줄 image_path: 사진 찍은 이미지 경로
@@ -1032,36 +1093,27 @@ def main(scan_size):
     # 117x줄 d_top, d_bottom: 이미지 상하단 cut size 
 
     # 이미지 자르기 및 반으로 나누기
-    image_path = r"received_files/scan.jpg"
-
+    image_path = r"received_files/scan.jpg" ## 조정 필요
+    
+    # scan_size = 1 #b scan size 입력값으로 작성 (1,2,3) = 콤보박스에 보여진 상태를 번호로 주면 됨
     left = 0 ## default #left~ bottom 변수 삭제 가능
     right = 0 ## default #left~ bottom 변수 삭제 가능
     top = 0  ## default  #left~ bottom 변수 삭제 가능
     bottom = 0  ## default #left~ bottom 변수 삭제 가능
 
     if scan_size == 1:
-        d_top = 200
-        d_bottom = 175
-    elif scan_size == 2:
         d_top = 0
         d_bottom = 300
-    elif scan_size == 3:
+    elif scan_size == 2:
         d_top = 270
         d_bottom = 0
-
-    # if scan_size == 2:
-    #     d_top = 0
-    #     d_bottom = 300
-    # elif scan_size == 3:
-    #     d_top = 270
-    #     d_bottom = 0
-    # elif scan_size == 1:
-    #     d_top = 200
-    #     d_bottom = 175
+    elif scan_size == 3:
+        d_top = 200
+        d_bottom = 175  # 300 ## 조정 필요 #size 2는 따로주기
 
 
     # crop_and_cut 함수 호출 후 반환 값을 받음
-    left_img, right_img = crop_and_cut(image_path, scan_size, left, right, top, bottom) # left ~ bottom 변수 삭제 가능
+    left_img, right_img = crop_and_cut(image_path, scan_size, left, right, top, bottom) #left~ bottom 변수 삭제 가능
 
     # 임시 파일 경로 생성
     temp_left_path = "left_temp.jpg"
@@ -1148,10 +1200,22 @@ def main(scan_size):
         cropped_image_bottom = crop_image_bottom(image_path, pil_image, d_top, d_bottom)
         # Apply OCR after remapping the image
         ocr_apply(cropped_image_bottom, output_dir)
+        
+        #outfile = remap_image(name, img, small, page_dims, params, output_dir)
+        #outfiles.append(outfile)
+        # Apply OCR after remapping the image
+        #ocr_apply(outfile, output_dir)
+        
+        #print( '  wrote', outfile)
 
         print("=====ocr run complete=====")
+
+    #print( 'to convert to PDF (requires ImageMagick):')
+    #print( '  convert -compress Group4 ' + ' '.join(outfiles) + ' output.pdf')
     
-    # 임시 파일 삭제 후 return 반환
+    # 임시 파일 삭제
+
     os.remove(temp_left_path)
     os.remove(temp_right_path)
+
     return True

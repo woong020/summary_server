@@ -14,7 +14,7 @@ class CustomSummarizer:
         raw_input_ids = self.tokenizer.encode(text)
         input_ids = [self.tokenizer.bos_token_id] + raw_input_ids + [self.tokenizer.eos_token_id]
 
-        summary_ids = self.model.generate(torch.tensor([input_ids]),  num_beams=10,  max_length=512,  eos_token_id=1)
+        summary_ids = self.model.generate(torch.tensor([input_ids]),  num_beams=4,  max_length=512,  eos_token_id=1)
         return self.tokenizer.decode(summary_ids.squeeze().tolist(), skip_special_tokens=True)
 
 
